@@ -1,0 +1,15 @@
+cmake_minimum_required( VERSION 3.7 )
+project( Zaboard LANGUAGES CXX )
+set( CMAKE_CXX_STANDARD 11 )
+# set( CMAKE_BUILD_TYPE Debug )
+
+file( GLOB zaboard_files src/*.cpp )
+add_executable( zaboard ${zaboard_files} )
+
+if( MSVC )
+  target_link_libraries( zaboard zml )
+  target_compile_options( zml PRIVATE /W4 /WX )
+else()
+  target_link_libraries( zaboard zml )
+  target_compile_options( zml PRIVATE -Wall -Wextra -pedantic -Werror)
+endif()
