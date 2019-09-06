@@ -27,20 +27,23 @@ cInstrument::cInstrument(zaber::motion::ascii::Axis instrument): _instrument(ins
     this->_maxlimit = this->_instrument.getSettings().get(setting_constants::LIMIT_MAX);
 
     this->_instrument.getSettings().set(setting_constants::ACCEL, 2000);
-    this->_instrument.genericCommand("move max");
 }
 
 void cInstrument::playNote(char note) {
-    static int direction = 1;
-
     double pos = this->_instrument.getPosition();
-    if ((pos < this->_maxlimit * 0.1) || (pos > this->_maxlimit * 0.9)) {
-        direction = -direction;
+    if (pos < this->_maxlimit * 0.1) {
+        this->_direction = 1;
+    } else if (pos > this->_maxlimit * 0.9) {
+        this->_direction = -1;
     }
 
-    this->_instrument.moveVelocity(notemap[note]*direction);
+    this->_instrument.moveVelocity(notemap[note] * this->_direction);
 }
 
 void cInstrument::silence() {
     this->_instrument.stop();
+}
+
+Axis* cInstrument::getInstrument() {
+    return &this->_instrument;
 }

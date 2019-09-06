@@ -51,6 +51,9 @@ int main() {
             std::cout << "Axis: " << devices[i].getAxis(j).toString() << std::endl;
         }
     }
+    for (auto& instrumentRef: instruments) {
+        instrumentRef.getInstrument()->waitUntilIdle();
+    }
 
     std::vector<char> requests;
     requests.reserve(8);
