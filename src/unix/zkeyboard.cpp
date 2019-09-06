@@ -32,8 +32,6 @@ class cKeyboard {
 };
 
 cKeyboard::cKeyboard() {
-    std::cout << "Keyboard up!" << std::endl;
-
     active = true;
     keyboard_fd = 0;
     keyboard_ev = new input_event();
@@ -41,7 +39,7 @@ cKeyboard::cKeyboard() {
     keyboard_fd = open(KEYBOARD_DEV, O_RDONLY | O_NONBLOCK);
     if (keyboard_fd > 0) {
         ioctl(keyboard_fd, EVIOCGNAME(256), name);
-        std::cout << "   Name: " << name << std::endl;
+        std::cout << "Keyboard up: " << name << std::endl;
         active = true;
         pthread_create(&thread, 0, &cKeyboard::loop, this);
     }

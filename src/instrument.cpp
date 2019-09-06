@@ -8,15 +8,15 @@
 using namespace zaber::motion::ascii;
 
 static std::unordered_map<char, int> notemap {
-        {'A', 54600},
-        {'S', 51800},
-        {'D', 46000},
-        {'F', 41000},
-        {'H', 36500},
-        {'J', 34500},
-        {'K', 30750},
-        {'L', 27450}
-    };
+    {'A', 27450},
+    {'S', 30750},
+    {'D', 34500},
+    {'F', 36500},
+    {'H', 41000},
+    {'J', 46000},
+    {'K', 51800},
+    {'L', 54600}
+};
 
 cInstrument::cInstrument(zaber::motion::ascii::Axis instrument): _instrument(instrument) {
     this->_instrument.getSettings().set(setting_constants::DRIVER_CURRENT_RUN, 60);
