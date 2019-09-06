@@ -6,7 +6,9 @@ public:
     void changeNote(char newNote);
     void playNote(char note);
     void silence();
+
     zaber::motion::ascii::Axis* getInstrument();
+    int getCurrentNote();
 
 private:
     zaber::motion::ascii::Axis _instrument;

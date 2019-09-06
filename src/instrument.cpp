@@ -1,11 +1,14 @@
 #include "instrument.h"
 #include <zaber/motion/ascii/axis_settings.h>      // for AxisSettings, ascii
-#include <zaber/motion/ascii/response.h>           // for Response
 #include <zaber/motion/ascii/setting_constants.h>  // for ACCEL, DRIVER_CURR...
 #include <unordered_map>                           // for unordered_map
+#include <cstdlib>                                 // for abs
 
 
 using namespace zaber::motion::ascii;
+
+
+constexpr int time_per_note_ms = 1;
 
 static std::unordered_map<char, int> notemap {
     {'A', 27450},
@@ -18,15 +21,21 @@ static std::unordered_map<char, int> notemap {
     {'L', 54600}
 };
 
+
 cInstrument::cInstrument(zaber::motion::ascii::Axis instrument): _instrument(instrument) {
     this->_instrument.getSettings().set(setting_constants::DRIVER_CURRENT_RUN, 60);
     this->_instrument.getSettings().set(setting_constants::MAXSPEED, 180000);
-
-    this->_instrument.home();
+    this->_instrument.getSettings().set(setting_constants::ACCEL, 2000);
 
     this->_maxlimit = this->_instrument.getSettings().get(setting_constants::LIMIT_MAX);
 
-    this->_instrument.getSettings().set(setting_constants::ACCEL, 2000);
+    this->_instrument.home(false);
+}
+
+void cInstrument::changeNote(char newNote) {
+    int accel = abs(notemap[newNote] - this->_currentNote) / time_per_note_ms;
+    this->_instrument.getSettings().set(setting_constants::ACCEL, accel);
+    playNote(newNote);
 }
 
 void cInstrument::playNote(char note) {
@@ -37,13 +46,19 @@ void cInstrument::playNote(char note) {
         this->_direction = -1;
     }
 
-    this->_instrument.moveVelocity(notemap[note] * this->_direction);
+    this->_currentNote = notemap[note];
+    this->_instrument.moveVelocity(this->_currentNote * this->_direction);
 }
 
 void cInstrument::silence() {
     this->_instrument.stop();
+    this->_currentNote = 0;
 }
 
 Axis* cInstrument::getInstrument() {
     return &this->_instrument;
+}
+
+int cInstrument::getCurrentNote() {
+    return this->_currentNote;
 }
