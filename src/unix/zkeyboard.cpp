@@ -1,11 +1,11 @@
-
-#include <iostream>
-#include <fcntl.h>
-#include <unistd.h>
-#include <pthread.h>
-#include <linux/input.h>
-#include <linux/input-event-codes.h>
-#include <unordered_map>
+#include <fcntl.h>                    // for open, O_NONBLOCK, O_RDONLY
+#include <linux/input-event-codes.h>  // for EV_KEY, KEY_A, KEY_CNT, KEY_D
+#include <linux/input.h>              // for input_event, EVIOCGNAME
+#include <pthread.h>                  // for pthread_create, pthread_join
+#include <sys/ioctl.h>                // for ioctl
+#include <unistd.h>                   // for close, read
+#include <iostream>                   // for operator<<, endl, basic_ostream
+#include <unordered_map>              // for unordered_map
 
 #define KEYBOARD_DEV "/dev/input/by-path/pci-0000:00:14.0-usb-0:1:1.0-event-kbd"
 
@@ -92,5 +92,5 @@ bool CheckIsKeyDown(const char key) {
         {'L', KEY_L}
     };
 
-    return { kb.getKeyState(keymap[key]) };
+    return kb.getKeyState(keymap[key]) > 0;
 }

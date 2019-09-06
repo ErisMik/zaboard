@@ -1,9 +1,16 @@
-#include "zkeyboard.h"
-#include <zaber/motion/ascii.h>
-#include <zaber/motion/ascii/setting_constants.h>
-#include <chrono>
-#include <iostream>
-#include <thread>
+#include <zaber/motion/ascii/alert_event.h>  // for ascii, motion
+#include <zaber/motion/ascii/axis.h>         // for Axis
+#include <zaber/motion/ascii/connection.h>   // for Connection
+#include <zaber/motion/ascii/device.h>       // for Device
+#include <zaber/motion/gateway/load_lib.h>   // for loadLibrary
+#include <zaber/motion/library.h>            // for Library
+#include <zaber/motion/log_output_mode.h>    // for LogOutputMode, LogOutput...
+#include <iostream>                          // for operator<<, endl, basic_...
+#include <memory>                            // for allocator_traits<>::valu...
+#include <string>                            // for operator<<
+#include <vector>                            // for vector
+#include "instrument.h"                      // for cInstrument
+#include "zkeyboard.h"                       // for CheckIsKeyDown
 
 
 using namespace zaber::motion;
@@ -19,13 +26,6 @@ using namespace zaber::motion::ascii;
 #endif
 
 constexpr int ASCII_BAUD_RATE = 115200;
-constexpr int BINARY_BAUD_RATE = 9600;
-constexpr double TEST_VEL = 30.0;
-constexpr int MOVE_TIME = 100;
-
-
-int SPEEDS[] = { 54600, 51800, 46000, 41000, 36500, 34500, 30750, 27450 };
-int VOL[5] = { 20, 30, 40, 50, 60 };
 
 
 int main() {
@@ -34,88 +34,61 @@ int main() {
         return 1;
     }
 
+    Library::setLogOutput(LogOutputMode::FILE, "zaboard.log");
+
     std::cout << "Starting connection to device" << std::endl;
     Connection conn = Connection::openSerialPort(DEVICE_PORT, ASCII_BAUD_RATE);
 
     std::cout << "Detecting devices" << std::endl;
     conn.renumberDevices();
+
     std::vector<Device> devices = conn.detectDevices();
-    std::vector<Axis> axes;
-    std::vector<double> maxlimits;
+    std::vector<cInstrument> instruments;
+
     for (int i = 0; i < (int) devices.size(); ++i) {
         for (int j = 1; j <= devices[i].getAxisCount(); ++j) {
-            axes.push_back(devices[i].getAxis(j));
-            std::cout << "Axis " << i << ": " << devices[i].getAxis(j).toString() << std::endl;
+            instruments.emplace_back(devices[i].getAxis(j));
+            std::cout << "Axis: " << devices[i].getAxis(j).toString() << std::endl;
         }
     }
 
-    std::cout << "Setting up devices" << std::endl;
-    for (int i = 0; i < (int) axes.size(); ++i) {
-        axes[i].getSettings().set(setting_constants::DRIVER_CURRENT_RUN, 60);
-        axes[i].getSettings().set(setting_constants::MAXSPEED, 180000);
-        axes[i].home(false);
-
-        maxlimits.push_back(axes[i].getSettings().get(setting_constants::LIMIT_MAX));
-        axes[i].getSettings().set(setting_constants::ACCEL, 2000);
-        //axes[i].moveAbsolute(maxlimits[i] / 2);
-        axes[i].genericCommand("move max");
-    }
-    for (int i = 0; i < (int) axes.size(); ++i) {
-        axes[i].waitUntilIdle();
-    }
-
-    int direction[] = { 1 };
-    // int speed_size = sizeof(VOL) / sizeof(VOL[0]);
+    std::vector<char> requests;
+    requests.reserve(8);
 
     while (!CheckIsKeyDown('Q')) {
-        int note = 0;
-        int requests[8] = { 0 };
+        requests.clear();
 
         if (CheckIsKeyDown('A')) {
-            requests[note] = (SPEEDS[7]);
-            note++;
+            requests.push_back('A');
         }
         if (CheckIsKeyDown('S')) {
-            requests[note] = (SPEEDS[6]);
-            note++;
+            requests.push_back('S');
         }
         if (CheckIsKeyDown('D')) {
-            requests[note] = (SPEEDS[5]);
-            note++;
+            requests.push_back('D');
         }
         if (CheckIsKeyDown('F')) {
-            requests[note] = (SPEEDS[4]);
-            note++;
+            requests.push_back('F');
         }
         if (CheckIsKeyDown('H')) {
-            requests[note] = (SPEEDS[3]);
-            note++;
+            requests.push_back('H');
         }
         if (CheckIsKeyDown('J')) {
-            requests[note] = (SPEEDS[2]);
-            note++;
+            requests.push_back('J');
         }
         if (CheckIsKeyDown('K')) {
-            requests[note] = (SPEEDS[1]);
-            note++;
+            requests.push_back('K');
         }
         if (CheckIsKeyDown('L')) {
-            requests[note] = (SPEEDS[0]);
-            note++;
+            requests.push_back('L');
         }
-        for (int i = 0; i < (int) axes.size(); ++i) {
-            double pos = axes[i].getPosition();
-            if (pos < maxlimits[i] * 0.1) {
-                direction[i] = 1;
-            }
-            else if (pos > maxlimits[i] * 0.9) {
-                direction[i] = -1;
-            }
-            if (requests[i] != 0) {
-                axes[i].moveVelocity(requests[i] * direction[i]);
-            }
-            else {
-                axes[i].stop();
+
+        for (auto& instrumentRef: instruments) {
+            if (!requests.empty()) {
+                instrumentRef.playNote(requests.back());
+                requests.pop_back();
+            } else {
+                instrumentRef.silence();
             }
         }
     }
