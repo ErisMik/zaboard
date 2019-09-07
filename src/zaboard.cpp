@@ -55,35 +55,17 @@ int main() {
         instrumentRef.getInstrument()->waitUntilIdle();
     }
 
+    const char playableKeys[] = {'A', 'S', 'D', 'F', 'H', 'J', 'K', 'L'};
     std::vector<char> requests;
     requests.reserve(8);
 
     while (!CheckIsKeyDown('Q')) {
         requests.clear();
 
-        if (CheckIsKeyDown('A')) {
-            requests.push_back('A');
-        }
-        if (CheckIsKeyDown('S')) {
-            requests.push_back('S');
-        }
-        if (CheckIsKeyDown('D')) {
-            requests.push_back('D');
-        }
-        if (CheckIsKeyDown('F')) {
-            requests.push_back('F');
-        }
-        if (CheckIsKeyDown('H')) {
-            requests.push_back('H');
-        }
-        if (CheckIsKeyDown('J')) {
-            requests.push_back('J');
-        }
-        if (CheckIsKeyDown('K')) {
-            requests.push_back('K');
-        }
-        if (CheckIsKeyDown('L')) {
-            requests.push_back('L');
+        for (auto& key: playableKeys) {
+            if (CheckIsKeyDown(key)) {
+                requests.push_back(key);
+            }
         }
 
         for (auto& instrumentRef: instruments) {
