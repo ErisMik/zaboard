@@ -22,7 +22,7 @@ static std::unordered_map<char, int> notemap {
 };
 
 
-cInstrument::cInstrument(zaber::motion::ascii::Axis instrument): _instrument(instrument) {
+cInstrument::cInstrument(zaber::motion::ascii::Axis instrument): _instrument(instrument), _currentNote(0) {
     this->_instrument.getSettings().set(setting_constants::DRIVER_CURRENT_RUN, 60);
     this->_instrument.getSettings().set(setting_constants::MAXSPEED, 180000);
     this->_instrument.getSettings().set(setting_constants::ACCEL, 2000);

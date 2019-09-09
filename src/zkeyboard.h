@@ -1,3 +1,5 @@
+#pragma once
+
 /*
 Checks wether a specific key is currently in the "down" state.
 

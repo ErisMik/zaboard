@@ -7,10 +7,11 @@
 #include <zaber/motion/log_output_mode.h>    // for LogOutputMode, LogOutput...
 #include <iostream>                          // for operator<<, endl, basic_...
 #include <memory>                            // for allocator_traits<>::valu...
-#include <string>                            // for operator<<
+#include <unordered_map>                     // for unordered_map
 #include <vector>                            // for vector
-#include "instrument.h"                      // for cInstrument
+#include "conductor.h"                       // for cConductor
 #include "zkeyboard.h"                       // for CheckIsKeyDown
+
 
 
 using namespace zaber::motion;
@@ -42,39 +43,42 @@ int main() {
     std::cout << "Detecting devices" << std::endl;
     conn.renumberDevices();
 
+    std::cout << "Tuning orchestra" << std::endl;
     std::vector<Device> devices = conn.detectDevices();
-    std::vector<cInstrument> instruments;
+    cConductor conductor;
 
     for (int i = 0; i < (int) devices.size(); ++i) {
         for (int j = 1; j <= devices[i].getAxisCount(); ++j) {
-            instruments.emplace_back(devices[i].getAxis(j));
-            std::cout << "Axis: " << devices[i].getAxis(j).toString() << std::endl;
+            conductor.registerInstrumentAxis(devices[i].getAxis(j));
         }
     }
-    for (auto& instrumentRef: instruments) {
-        instrumentRef.getInstrument()->waitUntilIdle();
-    }
+    conductor.waitForInstrumentsReady();
 
     const char playableKeys[] = {'A', 'S', 'D', 'F', 'H', 'J', 'K', 'L'};
-    std::vector<char> requests;
-    requests.reserve(8);
+
+    std::unordered_map<char, bool> prevKeyState;
+    for (auto& key: playableKeys) {
+        prevKeyState[key] = false;
+    }
 
     while (!CheckIsKeyDown('Q')) {
-        requests.clear();
-
         for (auto& key: playableKeys) {
-            if (CheckIsKeyDown(key)) {
-                requests.push_back(key);
-            }
-        }
+            bool isKeyDown = CheckIsKeyDown(key);
+            bool didPlay = false;
 
-        for (auto& instrumentRef: instruments) {
-            if (!requests.empty()) {
-                instrumentRef.playNote(requests.back());
-                requests.pop_back();
-            } else {
-                instrumentRef.silence();
+            /* Emulate what the keyboard events would look like */
+            if (isKeyDown && prevKeyState[key]) {
+                didPlay = conductor.handleKeypressPressedEvent(key);
             }
+            else if (isKeyDown) {  // !prevKeyState[key]
+                didPlay = conductor.handleKeypressDownEvent(key);
+            }
+            else if (prevKeyState[key]) {  // !isKeyDown
+                conductor.handleKeypressUpEvent(key);
+                didPlay = true;
+            }
+
+            if (didPlay) prevKeyState[key] = isKeyDown;
         }
     }
 

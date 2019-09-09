@@ -1,26 +1,42 @@
 #include "conductor.h"
 #include <zaber/motion/ascii/axis.h>           // for Axis
 #include <zaber/motion/ascii/axis_settings.h>  // for ascii
-#include <zaber/motion/ascii/device.h>         // for Device
 #include <iostream>                            // for operator<<, basic_ostream
 #include <string>                              // for operator<<
 
 
 using namespace zaber::motion::ascii;
 
+/* For some odd reason this constructor results in the interface ID become funky AF.
+    No doubt this is something to do with copying the Connection class around. Will investigate. */
+// cConductor::cConductor(std::vector<Device> devices) {
+//     for (auto& deviceRef: devices) {
+//         for (int i = 1; i <= deviceRef.getAxisCount(); ++i) {
+//             this->registerInstrumentAxis(deviceRef.getAxis(i));
+//         }
+//     }
 
-cConductor::cConductor(std::vector<Device> devices) {
-    for (auto& deviceRef: devices) {
-        for (int i = 1; i <= deviceRef.getAxisCount(); ++i) {
-            this->registerInstrument(deviceRef.getAxis(i));
-        }
-    }
-}
+//     for (auto& instrumentRef: this->_orchestra) {
+//         instrumentRef.getInstrument()->waitUntilIdle();
+//     }
+// }
 
 int cConductor::registerInstrument(cInstrument instrument) {
     std::cout << "Added: " << instrument.getInstrument()->toString() << std::endl;
-    this->_orchestra.emplace_back(instrument);
+    this->_orchestra.push_back(instrument);
     return this->_orchestra.size();
+}
+
+int cConductor::registerInstrumentAxis(Axis axis) {
+    std::cout << "Added: " << axis.toString() << std::endl;
+    this->_orchestra.emplace_back(axis);
+    return this->_orchestra.size();
+}
+
+void cConductor::waitForInstrumentsReady() {
+    for (auto& instrumentRef: this->_orchestra) {
+        instrumentRef.getInstrument()->waitUntilIdle();
+    }
 }
 
 bool cConductor::handleKeypressDownEvent(char key) {

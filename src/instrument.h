@@ -1,3 +1,5 @@
+#pragma once
+
 #include <zaber/motion/ascii/axis.h>  // for Axis
 
 class cInstrument {
