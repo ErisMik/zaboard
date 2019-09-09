@@ -33,7 +33,7 @@ cInstrument::cInstrument(zaber::motion::ascii::Axis instrument): _instrument(ins
 }
 
 void cInstrument::changeNote(char newNote) {
-    int accel = abs(notemap[newNote] - this->_currentNote) / time_per_note_ms;
+    int accel = abs(this->convertKeytoNote(newNote) - this->_currentNote) / time_per_note_ms;
     this->_instrument.getSettings().set(setting_constants::ACCEL, accel);
     playNote(newNote);
 }
@@ -46,7 +46,7 @@ void cInstrument::playNote(char note) {
         this->_direction = -1;
     }
 
-    this->_currentNote = notemap[note];
+    this->_currentNote = this->convertKeytoNote(note);
     this->_instrument.moveVelocity(this->_currentNote * this->_direction);
 }
 
@@ -55,10 +55,18 @@ void cInstrument::silence() {
     this->_currentNote = 0;
 }
 
+bool cInstrument::isPlaying() {
+    return this->_currentNote != 0;
+}
+
 Axis* cInstrument::getInstrument() {
     return &this->_instrument;
 }
 
 int cInstrument::getCurrentNote() {
     return this->_currentNote;
+}
+
+int cInstrument::convertKeytoNote(char key) {
+    return notemap[key];
 }
