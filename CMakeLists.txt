@@ -15,8 +15,20 @@ endif()
 add_executable( zaboard ${zaboard_files} ${zaboard_os_files} )
 
 if( MSVC )
-  target_link_libraries( zaboard zml )
-  target_compile_options( zaboard PRIVATE /W4 /WX )
+  file( GLOB zmldlls "C:Program Files\\ZaberMotionLibrary\\bin\\*.dll" )
+  file( COPY ${zmldlls} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}\\Release" )
+  file( COPY ${zmldlls} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}\\Debug" )
+
+  target_include_directories( zaboard SYSTEM PRIVATE "C:Program Files\\ZaberMotionLibrary\\include" )
+
+  add_library( winzml STATIC IMPORTED )
+  set_target_properties( winzml PROPERTIES
+                                IMPORTED_LOCATION_DEBUG "C:Program Files\\ZaberMotionLibrary\\lib\\zml.lib"
+                                IMPORTED_LOCATION_RELEASE "C:Program Files\\ZaberMotionLibrary\\lib\\zml.lib"
+  )
+
+  target_link_libraries( zaboard winzml )
+  target_compile_options( zaboard PRIVATE /W4 )  # /WX
 else()
   target_link_libraries( zaboard zml pthread )
   target_compile_options( zaboard PRIVATE -Wall -Wextra -pedantic )  # -Werror
