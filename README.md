@@ -4,7 +4,7 @@
 ```bash
 mkdir build
 cd build
-cmake -G "Visual Studio 15 2017" ../
+cmake -G "Visual Studio 15 2017 Win64" ../
 
 # Open the visual studio solution file in the build folder and build using Visual Studio
 ```
