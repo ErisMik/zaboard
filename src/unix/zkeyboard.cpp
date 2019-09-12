@@ -84,10 +84,18 @@ bool CheckIsKeyDown(const char key) {
         {'S', KEY_S},
         {'D', KEY_D},
         {'F', KEY_F},
+        {'G', KEY_G},
         {'H', KEY_H},
         {'J', KEY_J},
         {'K', KEY_K},
-        {'L', KEY_L}
+        {'L', KEY_L},
+        {'Z', KEY_Z},
+        {'X', KEY_X},
+        {'C', KEY_C},
+        {'V', KEY_V},
+        {'B', KEY_B},
+        {'N', KEY_N},
+        {'M', KEY_M}
     };
 
     return kb.getKeyState(keymap[key]) > 0;

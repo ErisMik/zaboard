@@ -30,6 +30,7 @@ constexpr int ASCII_BAUD_RATE = 115200;
 
 
 int main() {
+    // Leaving this shim in here until the direct link shared lib becomes master branch
     // if (loadLibrary(LIB_LOAD_PATH) != 0) {
     //     std::cout << "Lib not load " << std::endl;
     //     return 1;
