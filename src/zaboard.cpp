@@ -54,7 +54,7 @@ int main() {
     }
     conductor.waitForInstrumentsReady();
 
-    const char playableKeys[] = {'A', 'S', 'D', 'F', 'H', 'J', 'K', 'L'};
+    const char playableKeys[] = {'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K'};
 
     std::unordered_map<char, bool> prevKeyState;
     for (auto& key: playableKeys) {
