@@ -26,6 +26,7 @@ public:
     static cNoteMap mapFromCSV(std::string fileName = "NoteMap.csv");
 
     void add(cNoteInfo noteInfo);
+    int getSpeed(int midiNote, std::string deviceName);
 
 private:
     std::unordered_map<int, cNoteInfo> _noteMap;

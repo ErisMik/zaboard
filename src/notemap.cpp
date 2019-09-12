@@ -67,3 +67,7 @@ cNoteMap cNoteMap::mapFromCSV(std::string fileName) {
 void cNoteMap::add(cNoteInfo noteInfo) {
     this->_noteMap[noteInfo.getMidiNote()] = noteInfo;
 }
+
+int cNoteMap::getSpeed(int midiNote, std::string deviceName) {
+    return _noteMap[midiNote].getDeviceSpeed(deviceName);
+}
