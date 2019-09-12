@@ -5,6 +5,11 @@ set( CMAKE_CXX_STANDARD 11 )
 
 find_program(iwyu_path NAMES include-what-you-use iwyu)
 
+if( MSVC )
+  set( CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}" )
+  set( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}" )
+endif()
+
 file( GLOB zaboard_files src/*.cpp )
 if( MSVC )
   file( GLOB zaboard_os_files src/windows/*.cpp )
@@ -15,16 +20,16 @@ endif()
 add_executable( zaboard ${zaboard_files} ${zaboard_os_files} )
 
 if( MSVC )
-  file( GLOB zmldlls "C:Program Files\\ZaberMotionLibrary\\bin\\*.dll" )
-  file( COPY ${zmldlls} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}\\Release" )
-  file( COPY ${zmldlls} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}\\Debug" )
+  file( GLOB zmldlls "C:/Program Files/ZaberMotionLibrary/bin/*" )
+  file( COPY ${zmldlls} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release" )
+  file( COPY ${zmldlls} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug" )
 
-  target_include_directories( zaboard SYSTEM PRIVATE "C:Program Files\\ZaberMotionLibrary\\include" )
+  target_include_directories( zaboard SYSTEM PRIVATE "C:\\Program Files\\ZaberMotionLibrary\\include" )
 
   add_library( winzml STATIC IMPORTED )
   set_target_properties( winzml PROPERTIES
-                                IMPORTED_LOCATION_DEBUG "C:Program Files\\ZaberMotionLibrary\\lib\\zml.lib"
-                                IMPORTED_LOCATION_RELEASE "C:Program Files\\ZaberMotionLibrary\\lib\\zml.lib"
+                                IMPORTED_LOCATION_DEBUG "C:\\Program Files\\ZaberMotionLibrary\\lib\\zml.lib"
+                                IMPORTED_LOCATION_RELEASE "C:\\Program Files\\ZaberMotionLibrary\\lib\\zml.lib"
   )
 
   target_link_libraries( zaboard winzml )

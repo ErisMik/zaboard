@@ -23,17 +23,17 @@ using namespace zaber::motion::ascii;
     constexpr char DEVICE_PORT   [] = "/dev/ttyUSB0";
 #else
     constexpr char LIB_LOAD_PATH [] = "C:\\Program Files (x86)\\ZaberMotionLibrary\\lib\\";
-    constexpr char DEVICE_PORT   [] = "COM4";
+    constexpr char DEVICE_PORT   [] = "COM6";
 #endif
 
 constexpr int ASCII_BAUD_RATE = 115200;
 
 
 int main() {
-    if (loadLibrary(LIB_LOAD_PATH) != 0) {
-        std::cout << "Lib not load " << std::endl;
-        return 1;
-    }
+    // if (loadLibrary(LIB_LOAD_PATH) != 0) {
+    //     std::cout << "Lib not load " << std::endl;
+    //     return 1;
+    // }
 
     Library::setLogOutput(LogOutputMode::FILE, "zaboard.log");
 
