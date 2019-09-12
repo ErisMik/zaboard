@@ -24,6 +24,9 @@ if( MSVC )
   file( COPY ${zmldlls} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release" )
   file( COPY ${zmldlls} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug" )
 
+  file( COPY "NoteMap.csv" DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release" )
+  file( COPY "NoteMap.csv" DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug" )
+
   target_include_directories( zaboard SYSTEM PRIVATE "C:\\Program Files\\ZaberMotionLibrary\\include" )
 
   add_library( winzml STATIC IMPORTED )
@@ -35,6 +38,8 @@ if( MSVC )
   target_link_libraries( zaboard winzml )
   target_compile_options( zaboard PRIVATE /W4 )  # /WX
 else()
+  file( COPY "NoteMap.csv" DESTINATION "${CMAKE_BINARY_DIR}" )
+
   target_link_libraries( zaboard zml pthread )
   target_compile_options( zaboard PRIVATE -Wall -Wextra -pedantic )  # -Werror
 endif()

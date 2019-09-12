@@ -10,8 +10,8 @@
 #include <unordered_map>                     // for unordered_map
 #include <vector>                            // for vector
 #include "conductor.h"                       // for cConductor
+#include "notemap.h"                         // for cNoteMap
 #include "zkeyboard.h"                       // for CheckIsKeyDown
-
 
 
 using namespace zaber::motion;
@@ -45,6 +45,8 @@ int main() {
     conn.renumberDevices();
 
     std::cout << "Tuning orchestra" << std::endl;
+    cNoteMap midiNoteMap = cNoteMap::mapFromCSV();
+
     std::vector<Device> devices = conn.detectDevices();
     cConductor conductor;
 
@@ -55,6 +57,7 @@ int main() {
     }
     conductor.waitForInstrumentsReady();
 
+
     const char playableKeys[] = {'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K'};
 
     std::unordered_map<char, bool> prevKeyState;
@@ -62,6 +65,7 @@ int main() {
         prevKeyState[key] = false;
     }
 
+    std::cout << "Ready to play!" << std::endl;
     while (!CheckIsKeyDown('Q')) {
         for (auto& key: playableKeys) {
             bool isKeyDown = CheckIsKeyDown(key);
