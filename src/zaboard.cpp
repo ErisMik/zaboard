@@ -23,7 +23,7 @@ using namespace zaber::motion::ascii;
     constexpr char DEVICE_PORT   [] = "/dev/ttyUSB0";
 #else
     constexpr char LIB_LOAD_PATH [] = "C:\\Program Files (x86)\\ZaberMotionLibrary\\lib\\";
-    constexpr char DEVICE_PORT   [] = "COM6";
+    constexpr char DEVICE_PORT   [] = "COM4";
 #endif
 
 constexpr int ASCII_BAUD_RATE = 115200;
