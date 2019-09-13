@@ -33,8 +33,9 @@ using namespace zaber::motion::ascii;
 
 constexpr int ASCII_BAUD_RATE = 115200;
 constexpr double DEFAULT_SEC_PER_TICK = 93e-3;
-constexpr double MS_PER_SEC = 500.0;
+constexpr double MS_PER_SEC = 1000.0;
 constexpr int TRACK = 0;
+constexpr int TRACK_OFFSET = 0;
 
 
 int playMidiFile(std::string filename) {
@@ -77,10 +78,10 @@ int playMidiFile(std::string filename) {
 
         if (mev->isTempo()) sec_per_tick = mev->getTempoSPT(tpq);
         else if (mev->isNoteOn()) {
-            conductor.handleMidiNoteOn( (int)(*mev)[1], midiNoteMap);
+            conductor.handleMidiNoteOn(mev->track - TRACK_OFFSET, (int)(*mev)[1], midiNoteMap);
         }
         else if (mev->isNoteOff()) {
-            conductor.handleMidiNoteOff( (int)(*mev)[1], midiNoteMap);
+            conductor.handleMidiNoteOff(mev->track - TRACK_OFFSET, (int)(*mev)[1], midiNoteMap);
         }
 
         int ms_sleep_time = MS_PER_SEC * sec_per_tick * deltaTick;

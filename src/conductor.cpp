@@ -71,8 +71,10 @@ bool cConductor::handleKeypressUpEvent(char key) {
     return false;
 }
 
-bool cConductor::handleMidiNoteOn(int midiNote, cNoteMap& noteMap) {
-    for (auto& instrumentRef: this->_orchestra) {
+bool cConductor::handleMidiNoteOn(int trackNum, int midiNote, cNoteMap& noteMap) {
+    if (trackNum >= 0 && trackNum < this->_orchestra.size()) {
+        auto instrumentRef = this->_orchestra[trackNum];
+
         if (!instrumentRef.isPlaying()) {
             int speed = noteMap.getSpeed(midiNote, "");
 
@@ -81,12 +83,14 @@ bool cConductor::handleMidiNoteOn(int midiNote, cNoteMap& noteMap) {
         }
     }
 
-    std::cout << "No instrumentfree for " << midiNote << std::endl;
+    std::cout << "No instrument free for note-" << midiNote << " track-" << trackNum << std::endl;
     return false;
 }
 
-bool cConductor::handleMidiNoteOff(int midiNote, cNoteMap& noteMap) {
-    for (auto& instrumentRef: this->_orchestra) {
+bool cConductor::handleMidiNoteOff(int trackNum, int midiNote, cNoteMap& noteMap) {
+    if (trackNum >= 0 && trackNum < this->_orchestra.size()) {
+        auto instrumentRef = this->_orchestra[trackNum];
+
         if (instrumentRef.isPlaying()) {
             int speed = noteMap.getSpeed(midiNote, "");
 
@@ -97,6 +101,6 @@ bool cConductor::handleMidiNoteOff(int midiNote, cNoteMap& noteMap) {
         }
     }
 
-    std::cout << "!!! No instrument playing " << midiNote << std::endl;
+    std::cout << "!!! No instrument playing note-" << midiNote << " track-" << trackNum << std::endl;
     return false;
 }

@@ -17,8 +17,8 @@ public:
     bool handleKeypressPressedEvent(char key);
     bool handleKeypressUpEvent(char key);
 
-    bool handleMidiNoteOn(int midiNote, cNoteMap& noteMap);
-    bool handleMidiNoteOff(int midiNote, cNoteMap& noteMap);
+    bool handleMidiNoteOn(int trackNum, int midiNote, cNoteMap& noteMap);
+    bool handleMidiNoteOff(int trackNum, int midiNote, cNoteMap& noteMap);
 
 private:
     std::vector<cInstrument> _orchestra;
