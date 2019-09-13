@@ -33,7 +33,7 @@ using namespace zaber::motion::ascii;
 
 constexpr int ASCII_BAUD_RATE = 115200;
 constexpr double DEFAULT_SEC_PER_TICK = 93e-3;
-constexpr double MS_PER_SEC = 500.0;
+constexpr double MS_PER_SEC = 1000.0;
 constexpr int TRACK = 0;
 
 
@@ -160,7 +160,7 @@ int main(int argc, char** argv) {
     }
 
     Library::setDeviceDbSource(DeviceDbSourceType::WEB_SERVICE, "https://api.zaber.io/device-db/master");
-    Library::setLogOutput(LogOutputMode::FILE, "zaboard.log");
+    // Library::setLogOutput(LogOutputMode::FILE, "zaboard.log");
 
     if (argc == 1) {
         return playLiveKeybaord();
