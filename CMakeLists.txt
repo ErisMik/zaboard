@@ -40,7 +40,7 @@ if( MSVC )
 else()
   file( COPY "NoteMap.csv" DESTINATION "${CMAKE_BINARY_DIR}" )
 
-  target_link_libraries( zaboard zml pthread )
+  target_link_libraries( zaboard zml pthread midifile )
   target_compile_options( zaboard PRIVATE -Wall -Wextra -pedantic )  # -Werror
 endif()
 

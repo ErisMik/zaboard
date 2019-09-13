@@ -3,6 +3,7 @@
 #include <zaber/motion/ascii/setting_constants.h>  // for ACCEL, DRIVER_CURR...
 #include <unordered_map>                           // for unordered_map
 #include <cstdlib>                                 // for abs
+#include <future>
 
 
 using namespace zaber::motion::ascii;
@@ -57,8 +58,21 @@ void cInstrument::playNote(char note) {
     this->_instrument.moveVelocity(this->_currentNote * this->_direction);
 }
 
+void cInstrument::playMidiNote(int noteSpeed) {
+    double pos = this->_instrument.getPosition();
+    if (pos < this->_maxlimit * 0.1) {
+        this->_direction = 1;
+    } else if (pos > this->_maxlimit * 0.9) {
+        this->_direction = -1;
+    }
+
+    this->_currentNote = noteSpeed;
+    this->_instrument.moveVelocity(this->_currentNote * this->_direction);
+    // std::async(std::launch::async, [this]{ this->_instrument.moveVelocity(this->_currentNote * this->_direction); });
+}
+
 void cInstrument::silence() {
-    this->_instrument.stop();
+    this->_instrument.stop(false);
     this->_currentNote = 0;
 }
 

@@ -3,6 +3,7 @@
 #include <zaber/motion/ascii/axis_settings.h>  // for ascii
 #include <iostream>                            // for operator<<, basic_ostream
 #include <string>                              // for operator<<
+#include "notemap.h"
 
 
 using namespace zaber::motion::ascii;
@@ -67,5 +68,35 @@ bool cConductor::handleKeypressUpEvent(char key) {
     }
 
     std::cout << "!!! No instrument playing " << key << std::endl;
+    return false;
+}
+
+bool cConductor::handleMidiNoteOn(int midiNote, cNoteMap& noteMap) {
+    for (auto& instrumentRef: this->_orchestra) {
+        if (!instrumentRef.isPlaying()) {
+            int speed = noteMap.getSpeed(midiNote, "");
+
+            instrumentRef.playMidiNote(speed);
+            return true;
+        }
+    }
+
+    std::cout << "No instrumentfree for " << midiNote << std::endl;
+    return false;
+}
+
+bool cConductor::handleMidiNoteOff(int midiNote, cNoteMap& noteMap) {
+    for (auto& instrumentRef: this->_orchestra) {
+        if (instrumentRef.isPlaying()) {
+            int speed = noteMap.getSpeed(midiNote, "");
+
+            if (instrumentRef.getCurrentNote() == speed) {
+                instrumentRef.silence();
+                return true;
+            }
+        }
+    }
+
+    std::cout << "!!! No instrument playing " << midiNote << std::endl;
     return false;
 }

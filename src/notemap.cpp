@@ -1,6 +1,7 @@
 #include "notemap.h"
 #include <utility>  // for pair
 #include "csv.hpp"  // for with_column_content, with_column_name, CSVReader
+#include <iostream>
 
 
 /**** cNoteInfo *****/
@@ -31,13 +32,17 @@ int cNoteInfo::getDeviceSpeed(std::string deviceName) {
         return this->_deviceSpeedMap[deviceName];
 
     // If it's not there, assume average of other speed.
-    // Will result in 0 if no note info
+    // Will result in 0 if no note info.
     } else {
         int sum = 0;
+        int applicable = 0;
         for (const auto& devSpeedRef: this->_deviceSpeedMap) {
-            if (devSpeedRef.second != 0) sum += devSpeedRef.second;
+            if (devSpeedRef.second != 0) {
+                sum += devSpeedRef.second;
+                ++applicable;
+            }
         }
-        return sum / this->_deviceSpeedMap.size();
+        return (applicable > 0) ? sum / applicable : 0;
     }
 }
 
@@ -49,7 +54,7 @@ cNoteMap cNoteMap::mapFromCSV(std::string fileName) {
 
     cNoteMap noteMap;
 
-    int midiNote; std::string noteName; float freqHz; /**/ int speedVSR; int speedRST; int speedRSW;
+    int midiNote; std::string noteName; float freqHz; /**/ int speedVSR=0; int speedRST=0; int speedRSW=0;
     while(in.read_row(midiNote, noteName, freqHz, speedVSR, speedRST, speedRSW)) {
         std::unordered_map<std::string, int> deviceSpeedMap = {
             {"VSR", speedVSR},
@@ -57,7 +62,6 @@ cNoteMap cNoteMap::mapFromCSV(std::string fileName) {
             {"RSW", speedRSW},
         };
 
-        // cNoteInfo noteInfo (midiNote, noteName, freqHz, deviceSpeedMap);
         noteMap.add(cNoteInfo(midiNote, noteName, freqHz, deviceSpeedMap));
     }
 
@@ -69,5 +73,5 @@ void cNoteMap::add(cNoteInfo noteInfo) {
 }
 
 int cNoteMap::getSpeed(int midiNote, std::string deviceName) {
-    return _noteMap[midiNote].getDeviceSpeed(deviceName);
+    return (_noteMap.count(midiNote)) ? _noteMap[midiNote].getDeviceSpeed(deviceName) : 0;
 }

@@ -7,6 +7,7 @@ public:
     cInstrument(zaber::motion::ascii::Axis instrument);
     void changeNote(char newNote);
     void playNote(char note);
+    void playMidiNote(int noteSpeed);
     void silence();
     bool isPlaying();
 

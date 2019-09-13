@@ -3,6 +3,7 @@
 #include <vector>        // for vector
 #include "instrument.h"  // for cInstrument
 namespace zaber { namespace motion { namespace ascii { class Axis; } } }
+class cNoteMap;
 
 class cConductor {
 public:
@@ -16,6 +17,8 @@ public:
     bool handleKeypressPressedEvent(char key);
     bool handleKeypressUpEvent(char key);
 
+    bool handleMidiNoteOn(int midiNote, cNoteMap& noteMap);
+    bool handleMidiNoteOff(int midiNote, cNoteMap& noteMap);
 
 private:
     std::vector<cInstrument> _orchestra;
