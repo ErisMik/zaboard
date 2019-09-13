@@ -161,7 +161,7 @@ int main(int argc, char** argv) {
     }
 
     Library::setDeviceDbSource(DeviceDbSourceType::WEB_SERVICE, "https://api.zaber.io/device-db/master");
-    Library::setLogOutput(LogOutputMode::FILE, "zaboard.log");
+    // Library::setLogOutput(LogOutputMode::FILE, "zaboard.log");
 
     if (argc == 1) {
         return playLiveKeybaord();
