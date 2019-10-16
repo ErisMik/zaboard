@@ -71,6 +71,9 @@ bool cConductor::handleKeypressUpEvent(char key) {
     return false;
 }
 
+
+/**** MIDI Multi Track Mode ****/
+
 bool cConductor::handleMidiNoteOn(int trackNum, int midiNote, cNoteMap& noteMap) {
     if (trackNum >= 0 && trackNum < this->_orchestra.size()) {
         auto instrumentRef = this->_orchestra[trackNum];
@@ -102,5 +105,38 @@ bool cConductor::handleMidiNoteOff(int trackNum, int midiNote, cNoteMap& noteMap
     }
 
     std::cout << "!!! No instrument playing note-" << midiNote << " track-" << trackNum << std::endl;
+    return false;
+}
+
+
+/**** MIDI Single Track Mode ****/
+
+bool cConductor::handleMidiNoteOn(int midiNote, cNoteMap& noteMap) {
+    for (auto& instrumentRef: this->_orchestra) {
+        if (!instrumentRef.isPlaying()) {
+            int speed = noteMap.getSpeed(midiNote, "");
+
+            instrumentRef.playMidiNote(speed);
+            return true;
+        }
+    }
+
+    std::cout << "No instrument free for " << midiNote << std::endl;
+    return false;
+}
+
+bool cConductor::handleMidiNoteOff(int midiNote, cNoteMap& noteMap) {
+    for (auto& instrumentRef: this->_orchestra) {
+        if (instrumentRef.isPlaying()) {
+            int speed = noteMap.getSpeed(midiNote, "");
+
+            if (instrumentRef.getCurrentNote() == speed) {
+                instrumentRef.silence();
+                return true;
+            }
+        }
+    }
+
+    std::cout << "!!! No instrument playing " << midiNote << std::endl;
     return false;
 }

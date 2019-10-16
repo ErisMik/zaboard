@@ -63,6 +63,10 @@ int playMidiFile(std::string filename) {
     std::cout << "Now Playing: " << filename << std::endl;
     smf::MidiFile midifile;
     midifile.read(filename);
+
+    // const bool multiTrackMode = (midifile.getTrackCount() > 1) ? true : false;
+    const bool multiTrackMode = false;
+
     midifile.joinTracks();
     const int tpq = midifile.getTicksPerQuarterNote();
 
@@ -78,10 +82,12 @@ int playMidiFile(std::string filename) {
 
         if (mev->isTempo()) sec_per_tick = mev->getTempoSPT(tpq);
         else if (mev->isNoteOn()) {
-            conductor.handleMidiNoteOn(mev->track - TRACK_OFFSET, (int)(*mev)[1], midiNoteMap);
+            if (multiTrackMode) conductor.handleMidiNoteOn(mev->track - TRACK_OFFSET, (int)(*mev)[1], midiNoteMap);
+            else conductor.handleMidiNoteOn((int)(*mev)[1], midiNoteMap);
         }
         else if (mev->isNoteOff()) {
-            conductor.handleMidiNoteOff(mev->track - TRACK_OFFSET, (int)(*mev)[1], midiNoteMap);
+            if (multiTrackMode) conductor.handleMidiNoteOff(mev->track - TRACK_OFFSET, (int)(*mev)[1], midiNoteMap);
+            else conductor.handleMidiNoteOff((int)(*mev)[1], midiNoteMap);
         }
 
         int ms_sleep_time = MS_PER_SEC * sec_per_tick * deltaTick;
