@@ -1,13 +1,11 @@
 #include "instrument.h"
-#include <zaber/motion/ascii/axis_settings.h>      // for AxisSettings, ascii
-#include <zaber/motion/ascii/setting_constants.h>  // for ACCEL, DRIVER_CURR...
-#include <unordered_map>                           // for unordered_map
-#include <cstdlib>                                 // for abs
+#include <cstdlib> // for abs
 #include <future>
-
+#include <unordered_map> // for unordered_map
+#include <zaber/motion/ascii/axis_settings.h> // for AxisSettings, ascii
+#include <zaber/motion/ascii/setting_constants.h> // for ACCEL, DRIVER_CURR...
 
 using namespace zaber::motion::ascii;
-
 
 constexpr int time_per_note_ms = 1;
 
@@ -20,17 +18,16 @@ static std::unordered_map<char, int> notemap {
     {'N', 23100},
     {'M', 25900},
     {'A', 27450},
-	{'S', 30750},
-	{'D', 34500},
-	{'F', 36500},
-	{'G', 41000},
-	{'H', 46000},
-	{'J', 51800},
-	{'K', 54600}
-};
+    {'S', 30750},
+    {'D', 34500},
+    {'F', 36500},
+    {'G', 41000},
+    {'H', 46000},
+    {'J', 51800},
+    {'K', 54600}};
 
-
-cInstrument::cInstrument(zaber::motion::ascii::Axis instrument): _instrument(instrument), _currentNote(0) {
+cInstrument::cInstrument(zaber::motion::ascii::Axis instrument) :
+    _instrument(instrument), _currentNote(0) {
     this->_instrument.getSettings().set(setting_constants::DRIVER_CURRENT_RUN, 60);
     this->_instrument.getSettings().set(setting_constants::MAXSPEED, 180000);
     this->_instrument.getSettings().set(setting_constants::ACCEL, 2000);

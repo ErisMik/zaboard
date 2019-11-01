@@ -1,39 +1,35 @@
+#include "conductor.h" // for cConductor
+#include "notemap.h" // for cNoteMap
+#include "zkeyboard.h" // for CheckIsKeyDown
+#include <chrono> // for milliseconds
+#include <iostream> // for operator<<, endl, basic_...
+#include <memory> // for allocator_traits<>::valu...
 #include <midifile/MidiFile.h>
-#include <zaber/motion/ascii/alert_event.h>  // for ascii, motion
-#include <zaber/motion/ascii/axis.h>         // for Axis
-#include <zaber/motion/ascii/connection.h>   // for Connection
-#include <zaber/motion/ascii/device.h>       // for Device
-#include <zaber/motion/gateway/load_lib.h>   // for loadLibrary
-#include <zaber/motion/library.h>            // for Library
-#include <zaber/motion/log_output_mode.h>    // for LogOutputMode, LogOutput...
-#include <chrono>                            // for milliseconds
-#include <iostream>                          // for operator<<, endl, basic_...
-#include <memory>                            // for allocator_traits<>::valu...
-#include <string>                            // for operator<<, operator==
-#include <thread>                            // for sleep_for
-#include <unordered_map>                     // for unordered_map
-#include <vector>                            // for vector
-#include "conductor.h"                       // for cConductor
-#include "notemap.h"                         // for cNoteMap
-#include "zkeyboard.h"                       // for CheckIsKeyDown
-
-
+#include <string> // for operator<<, operator==
+#include <thread> // for sleep_for
+#include <unordered_map> // for unordered_map
+#include <vector> // for vector
+#include <zaber/motion/ascii/alert_event.h> // for ascii, motion
+#include <zaber/motion/ascii/axis.h> // for Axis
+#include <zaber/motion/ascii/connection.h> // for Connection
+#include <zaber/motion/ascii/device.h> // for Device
+#include <zaber/motion/gateway/load_lib.h> // for loadLibrary
+#include <zaber/motion/library.h> // for Library
+#include <zaber/motion/log_output_mode.h> // for LogOutputMode, LogOutput...
 
 using namespace zaber::motion;
 using namespace zaber::motion::ascii;
 
-
 #if __linux__
-    constexpr char DEVICE_PORT [] = "/dev/ttyUSB0";
+constexpr char DEVICE_PORT[] = "/dev/ttyUSB0";
 #else
-    constexpr char DEVICE_PORT [] = "COM4";
+constexpr char DEVICE_PORT[] = "COM4";
 #endif
 
 constexpr int ASCII_BAUD_RATE = 115200;
 constexpr double DEFAULT_SEC_PER_TICK = 93e-3;
 constexpr double MS_PER_SEC = 1000.0;
 constexpr int TRACK = 0;
-
 
 int playMidiFile(std::string filename) {
     std::cout << "Starting connection to device" << std::endl;
@@ -46,7 +42,7 @@ int playMidiFile(std::string filename) {
     std::vector<Device> devices = conn.detectDevices();
     cConductor conductor;
 
-    for (int i = 0; i < (int) devices.size(); ++i) {
+    for (int i = 0; i < (int)devices.size(); ++i) {
         for (int j = 1; j <= devices[i].getAxisCount(); ++j) {
             conductor.registerInstrumentAxis(devices[i].getAxis(j));
         }
@@ -67,18 +63,21 @@ int playMidiFile(std::string filename) {
     double sec_per_tick = DEFAULT_SEC_PER_TICK;
 
     smf::MidiEvent* mev;
-    for (int event=0; event < midifile[TRACK].size(); ++event) {
+    for (int event = 0; event < midifile[TRACK].size(); ++event) {
         mev = &midifile[TRACK][event];
 
-        if (event == 0) deltaTick = mev->tick;
-        else deltaTick = mev->tick - midifile[TRACK][event-1].tick;
-
-        if (mev->isTempo()) sec_per_tick = mev->getTempoSPT(tpq);
-        else if (mev->isNoteOn()) {
-            conductor.handleMidiNoteOn( (int)(*mev)[1], midiNoteMap);
+        if (event == 0) {
+            deltaTick = mev->tick;
+        } else {
+            deltaTick = mev->tick - midifile[TRACK][event - 1].tick;
         }
-        else if (mev->isNoteOff()) {
-            conductor.handleMidiNoteOff( (int)(*mev)[1], midiNoteMap);
+
+        if (mev->isTempo())
+            sec_per_tick = mev->getTempoSPT(tpq);
+        else if (mev->isNoteOn()) {
+            conductor.handleMidiNoteOn((int)(*mev)[1], midiNoteMap);
+        } else if (mev->isNoteOff()) {
+            conductor.handleMidiNoteOff((int)(*mev)[1], midiNoteMap);
         }
 
         int ms_sleep_time = MS_PER_SEC * sec_per_tick * deltaTick;
@@ -88,12 +87,10 @@ int playMidiFile(std::string filename) {
     return 0;
 }
 
-
 int playLiveMidiBoard() {
     std::cout << "Feature not implemented yet" << std::endl;
     return 1;
 }
-
 
 int playLiveKeybaord() {
     std::cout << "Starting connection to device" << std::endl;
@@ -106,35 +103,32 @@ int playLiveKeybaord() {
     std::vector<Device> devices = conn.detectDevices();
     cConductor conductor;
 
-    for (int i = 0; i < (int) devices.size(); ++i) {
+    for (int i = 0; i < (int)devices.size(); ++i) {
         for (int j = 1; j <= devices[i].getAxisCount(); ++j) {
             conductor.registerInstrumentAxis(devices[i].getAxis(j));
         }
     }
     conductor.waitForInstrumentsReady();
 
-
     const char playableKeys[] = {'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K'};
 
     std::unordered_map<char, bool> prevKeyState;
-    for (auto& key: playableKeys) {
+    for (auto& key : playableKeys) {
         prevKeyState[key] = false;
     }
 
     std::cout << "Ready to play!" << std::endl;
     while (!CheckIsKeyDown('Q')) {
-        for (auto& key: playableKeys) {
+        for (auto& key : playableKeys) {
             bool isKeyDown = CheckIsKeyDown(key);
             bool didPlay = false;
 
             /* Emulate what the keyboard events would look like */
             if (isKeyDown && prevKeyState[key]) {
                 didPlay = conductor.handleKeypressPressedEvent(key);
-            }
-            else if (isKeyDown) {  // !prevKeyState[key]
+            } else if (isKeyDown) { // !prevKeyState[key]
                 didPlay = conductor.handleKeypressDownEvent(key);
-            }
-            else if (prevKeyState[key]) {  // !isKeyDown
+            } else if (prevKeyState[key]) { // !isKeyDown
                 conductor.handleKeypressUpEvent(key);
                 didPlay = true;
             }
@@ -148,18 +142,15 @@ int playLiveKeybaord() {
     return 0;
 }
 
-
 int main(int argc, char** argv) {
     Library::setDeviceDbSource(DeviceDbSourceType::WEB_SERVICE, "https://api.zaber.io/device-db/master");
     // Library::setLogOutput(LogOutputMode::FILE, "zaboard.log");
 
     if (argc == 1) {
         return playLiveKeybaord();
-    }
-    else if (std::string(argv[1]) == "midilive") {
+    } else if (std::string(argv[1]) == "midilive") {
         return playLiveMidiBoard();
-    }
-    else {
+    } else {
         return playMidiFile(argv[1]);
     }
 }

@@ -1,8 +1,15 @@
 #pragma once
 
-#include <vector>        // for vector
-#include "instrument.h"  // for cInstrument
-namespace zaber { namespace motion { namespace ascii { class Axis; } } }
+#include "instrument.h" // for cInstrument
+#include <vector> // for vector
+
+namespace zaber {
+namespace motion {
+    namespace ascii {
+        class Axis;
+    }
+}
+}
 class cNoteMap;
 
 class cConductor {

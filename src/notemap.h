@@ -20,7 +20,6 @@ private:
     std::unordered_map<std::string, int> _deviceSpeedMap;
 };
 
-
 class cNoteMap {
 public:
     static cNoteMap mapFromCSV(std::string fileName = "NoteMap.csv");

@@ -1,11 +1,11 @@
-#include <fcntl.h>                    // for open, O_NONBLOCK, O_RDONLY
-#include <linux/input-event-codes.h>  // for EV_KEY, KEY_A, KEY_CNT, KEY_D
-#include <linux/input.h>              // for input_event, EVIOCGNAME
-#include <pthread.h>                  // for pthread_create, pthread_join
-#include <sys/ioctl.h>                // for ioctl
-#include <unistd.h>                   // for close, read
-#include <iostream>                   // for operator<<, endl, basic_ostream
-#include <unordered_map>              // for unordered_map
+#include <fcntl.h> // for open, O_NONBLOCK, O_RDONLY
+#include <iostream> // for operator<<, endl, basic_ostream
+#include <linux/input-event-codes.h> // for EV_KEY, KEY_A, KEY_CNT, KEY_D
+#include <linux/input.h> // for input_event, EVIOCGNAME
+#include <pthread.h> // for pthread_create, pthread_join
+#include <sys/ioctl.h> // for ioctl
+#include <unistd.h> // for close, read
+#include <unordered_map> // for unordered_map
 
 #define KEYBOARD_DEV "/dev/input/by-path/pci-0000:00:14.0-usb-0:1:1.0-event-kbd"
 
@@ -14,16 +14,16 @@ struct keyboard_state {
 };
 
 class cKeyboard {
-  private:
+private:
     pthread_t thread;
     bool active;
     int keyboard_fd;
-    input_event *keyboard_ev;
-    keyboard_state *keyboard_st;
+    input_event* keyboard_ev;
+    keyboard_state* keyboard_st;
     char name[256];
 
-  protected:
-  public:
+protected:
+public:
     cKeyboard();
     ~cKeyboard();
     static void* loop(void* obj);
@@ -56,8 +56,8 @@ cKeyboard::~cKeyboard() {
     keyboard_fd = 0;
 }
 
-void* cKeyboard::loop(void *obj) {
-    while (reinterpret_cast<cKeyboard *>(obj)->active) reinterpret_cast<cKeyboard *>(obj)->readEv();
+void* cKeyboard::loop(void* obj) {
+    while (reinterpret_cast<cKeyboard*>(obj)->active) reinterpret_cast<cKeyboard*>(obj)->readEv();
     return nullptr;
 }
 
@@ -74,7 +74,6 @@ void cKeyboard::readEv() {
 short cKeyboard::getKeyState(short key) {
     return keyboard_st->keys[key];
 }
-
 
 bool CheckIsKeyDown(const char key) {
     static cKeyboard kb;
@@ -95,8 +94,7 @@ bool CheckIsKeyDown(const char key) {
         {'V', KEY_V},
         {'B', KEY_B},
         {'N', KEY_N},
-        {'M', KEY_M}
-    };
+        {'M', KEY_M}};
 
     return kb.getKeyState(keymap[key]) > 0;
 }

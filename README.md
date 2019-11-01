@@ -15,3 +15,9 @@ mkdir build && cd build
 cmake ../
 make
 ```
+
+### Running Clang-Format
+```bash
+cd src
+clang-format -i ./**/*.*
+```

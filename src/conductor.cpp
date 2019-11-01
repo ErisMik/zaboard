@@ -1,10 +1,9 @@
 #include "conductor.h"
-#include <zaber/motion/ascii/axis.h>           // for Axis
-#include <zaber/motion/ascii/axis_settings.h>  // for ascii
-#include <iostream>                            // for operator<<, basic_ostream
-#include <string>                              // for operator<<
 #include "notemap.h"
-
+#include <iostream> // for operator<<, basic_ostream
+#include <string> // for operator<<
+#include <zaber/motion/ascii/axis.h> // for Axis
+#include <zaber/motion/ascii/axis_settings.h> // for ascii
 
 using namespace zaber::motion::ascii;
 
@@ -35,13 +34,13 @@ int cConductor::registerInstrumentAxis(Axis axis) {
 }
 
 void cConductor::waitForInstrumentsReady() {
-    for (auto& instrumentRef: this->_orchestra) {
+    for (auto& instrumentRef : this->_orchestra) {
         instrumentRef.getInstrument()->waitUntilIdle();
     }
 }
 
 bool cConductor::handleKeypressDownEvent(char key) {
-    for (auto& instrumentRef: this->_orchestra) {
+    for (auto& instrumentRef : this->_orchestra) {
         if (!instrumentRef.isPlaying()) {
             instrumentRef.playNote(key);
             return true;
@@ -58,7 +57,7 @@ bool cConductor::handleKeypressPressedEvent(char /*unused*/) {
 }
 
 bool cConductor::handleKeypressUpEvent(char key) {
-    for (auto& instrumentRef: this->_orchestra) {
+    for (auto& instrumentRef : this->_orchestra) {
         if (instrumentRef.isPlaying()) {
             if (instrumentRef.getCurrentNote() == instrumentRef.convertKeytoNote(key)) {
                 instrumentRef.silence();
@@ -72,7 +71,7 @@ bool cConductor::handleKeypressUpEvent(char key) {
 }
 
 bool cConductor::handleMidiNoteOn(int midiNote, cNoteMap& noteMap) {
-    for (auto& instrumentRef: this->_orchestra) {
+    for (auto& instrumentRef : this->_orchestra) {
         if (!instrumentRef.isPlaying()) {
             int speed = noteMap.getSpeed(midiNote, "");
 
@@ -86,7 +85,7 @@ bool cConductor::handleMidiNoteOn(int midiNote, cNoteMap& noteMap) {
 }
 
 bool cConductor::handleMidiNoteOff(int midiNote, cNoteMap& noteMap) {
-    for (auto& instrumentRef: this->_orchestra) {
+    for (auto& instrumentRef : this->_orchestra) {
         if (instrumentRef.isPlaying()) {
             int speed = noteMap.getSpeed(midiNote, "");
 
