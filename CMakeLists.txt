@@ -10,11 +10,16 @@ if( MSVC )
   set( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}" )
 endif()
 
-file( GLOB zaboard_files src/*.cpp )
+file( GLOB zaboard_files
+            src/zaboard.cpp
+            src/notemap.cpp
+            src/instrument.cpp
+            src/conductor.cpp
+            src/preprocessor/preprocessor.cpp )
 if( MSVC )
-  file( GLOB zaboard_os_files src/windows/*.cpp )
+  file( GLOB zaboard_os_files src/windows/zkeyboard.cpp )
 else()
-  file( GLOB zaboard_os_files src/unix/*.cpp )
+  file( GLOB zaboard_os_files src/unix/zkeyboard.cpp )
 endif()
 
 add_executable( zaboard ${zaboard_files} ${zaboard_os_files} )

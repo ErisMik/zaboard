@@ -24,11 +24,9 @@ using namespace zaber::motion::ascii;
 
 
 #if __linux__
-    constexpr char LIB_LOAD_PATH [] = "/usr/local/lib/";
-    constexpr char DEVICE_PORT   [] = "/dev/ttyUSB0";
+    constexpr char DEVICE_PORT [] = "/dev/ttyUSB0";
 #else
-    constexpr char LIB_LOAD_PATH [] = "C:\\Program Files (x86)\\ZaberMotionLibrary\\lib\\";
-    constexpr char DEVICE_PORT   [] = "COM4";
+    constexpr char DEVICE_PORT [] = "COM4";
 #endif
 
 constexpr int ASCII_BAUD_RATE = 115200;
@@ -105,7 +103,6 @@ int playLiveKeybaord() {
     conn.renumberDevices();
 
     std::cout << "Tuning orchestra" << std::endl;
-
     std::vector<Device> devices = conn.detectDevices();
     cConductor conductor;
 
@@ -153,12 +150,6 @@ int playLiveKeybaord() {
 
 
 int main(int argc, char** argv) {
-    // Leaving this shim in here until the direct link shared lib becomes master branch
-    if (loadLibrary(LIB_LOAD_PATH) != 0) {
-        std::cout << "Lib not load " << std::endl;
-        return 1;
-    }
-
     Library::setDeviceDbSource(DeviceDbSourceType::WEB_SERVICE, "https://api.zaber.io/device-db/master");
     // Library::setLogOutput(LogOutputMode::FILE, "zaboard.log");
 
