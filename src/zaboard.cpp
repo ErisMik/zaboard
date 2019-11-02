@@ -1,21 +1,23 @@
-#include "conductor.h" // for cConductor
-#include "notemap.h" // for cNoteMap
-#include "zkeyboard.h" // for CheckIsKeyDown
-#include <chrono> // for milliseconds
-#include <iostream> // for operator<<, endl, basic_...
-#include <memory> // for allocator_traits<>::valu...
+#include "conductor.h"
+#include "notemap.h"
+#include "zkeyboard.h"
+#include <chrono>
+#include <iostream>
+#include <memory>
+#include <midifile/MidiEvent.h>
+#include <midifile/MidiEventList.h>
 #include <midifile/MidiFile.h>
-#include <string> // for operator<<, operator==
-#include <thread> // for sleep_for
-#include <unordered_map> // for unordered_map
-#include <vector> // for vector
-#include <zaber/motion/ascii/alert_event.h> // for ascii, motion
-#include <zaber/motion/ascii/axis.h> // for Axis
-#include <zaber/motion/ascii/connection.h> // for Connection
-#include <zaber/motion/ascii/device.h> // for Device
-#include <zaber/motion/gateway/load_lib.h> // for loadLibrary
-#include <zaber/motion/library.h> // for Library
-#include <zaber/motion/log_output_mode.h> // for LogOutputMode, LogOutput...
+#include <string>
+#include <thread>
+#include <unordered_map>
+#include <vector>
+#include <zaber/motion/ascii/axis.h>
+#include <zaber/motion/ascii/axis_settings.h>
+#include <zaber/motion/ascii/connection.h>
+#include <zaber/motion/ascii/device.h>
+#include <zaber/motion/device_db_source_type.h>
+#include <zaber/motion/library.h>
+#include <zaber/motion/units.h>
 
 using namespace zaber::motion;
 using namespace zaber::motion::ascii;

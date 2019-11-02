@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.7 )
 project( Zaboard LANGUAGES CXX )
-set( CMAKE_CXX_STANDARD 11 )
+set( CMAKE_CXX_STANDARD 17 )
 # set( CMAKE_BUILD_TYPE Debug )
 
 find_program(iwyu_path NAMES include-what-you-use iwyu)
@@ -15,7 +15,9 @@ file( GLOB zaboard_files
             src/notemap.cpp
             src/instrument.cpp
             src/conductor.cpp
-            src/preprocessor/preprocessor.cpp )
+            # src/zbtrack.cpp
+            # src/preprocessor/preprocessor.cpp
+)
 if( MSVC )
   file( GLOB zaboard_os_files src/windows/zkeyboard.cpp )
 else()

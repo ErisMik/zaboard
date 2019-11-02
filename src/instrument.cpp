@@ -1,9 +1,8 @@
 #include "instrument.h"
-#include <cstdlib> // for abs
-#include <future>
-#include <unordered_map> // for unordered_map
-#include <zaber/motion/ascii/axis_settings.h> // for AxisSettings, ascii
-#include <zaber/motion/ascii/setting_constants.h> // for ACCEL, DRIVER_CURR...
+#include <cstdlib>
+#include <unordered_map>
+#include <zaber/motion/ascii/axis_settings.h>
+#include <zaber/motion/ascii/setting_constants.h>
 
 using namespace zaber::motion::ascii;
 

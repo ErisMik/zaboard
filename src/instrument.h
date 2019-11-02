@@ -1,6 +1,6 @@
 #pragma once
 
-#include <zaber/motion/ascii/axis.h> // for Axis
+#include <zaber/motion/ascii/axis.h>
 
 class cInstrument {
 public:
