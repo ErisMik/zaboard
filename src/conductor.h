@@ -28,5 +28,6 @@ public:
     bool handleMidiNoteOff(int midiNote, cNoteMap& noteMap);
 
 private:
+    size_t pickBestInstrument(int newNote);
     std::vector<cInstrument> _orchestra;
 };

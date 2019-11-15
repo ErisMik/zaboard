@@ -7,7 +7,7 @@
 #include <unistd.h> // for close, read
 #include <unordered_map> // for unordered_map
 
-#define KEYBOARD_DEV "/dev/input/by-path/pci-0000:00:14.0-usb-0:1:1.0-event-kbd"
+#define KEYBOARD_DEV "/dev/input/by-id/usb-DuckyChannel_International_Co.__Ltd._Ducky_Keyboard-event-kbd"
 
 struct keyboard_state {
     signed short keys[KEY_CNT];

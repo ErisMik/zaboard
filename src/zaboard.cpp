@@ -23,7 +23,7 @@ using namespace zaber::motion;
 using namespace zaber::motion::ascii;
 
 #if __linux__
-constexpr char DEVICE_PORT[] = "/dev/ttyUSB0";
+constexpr char DEVICE_PORT[] = "/dev/ttyUSB1";
 #else
 constexpr char DEVICE_PORT[] = "COM4";
 #endif

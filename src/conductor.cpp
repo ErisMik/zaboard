@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <limits>
 #include <zaber/motion/ascii/axis.h>
 #include <zaber/motion/ascii/axis_settings.h>
 
@@ -22,18 +23,21 @@ double costToAssignNote(int newNote, cInstrument& instrument) {
     return totalCost;
 }
 
-cInstrument& pickBestInstrument(int newNote, std::vector<cInstrument>& instruments) {
+size_t cConductor::pickBestInstrument(int newNote) {
+    double lowestCost = std::numeric_limits<double>::max();
+    size_t bestInstrument = 0;
 
-    double lowestCost = costToAssignNote(newNote, instruments[0]);
-    cInstrument& bestInstrument = instruments[0];
-
-    for (auto& instrumentRef : instruments) {
-        double cost = costToAssignNote(newNote, instruments[0]);
+    size_t idx = 0;
+    for (auto& instrumentRef : this->_orchestra) {
+        double cost = costToAssignNote(newNote, instrumentRef);
+        std::cout << cost << " ";
         if (cost < lowestCost && cost >= 0) {
             lowestCost = cost;
-            bestInstrument = instrumentRef;
+            bestInstrument = idx;
         }
+        idx++;
     }
+    std::cout << "{" << bestInstrument << "}" << std::endl;
 
     return bestInstrument;
 }
@@ -71,7 +75,8 @@ void cConductor::waitForInstrumentsReady() {
 }
 
 bool cConductor::handleKeypressDownEvent(char key) {
-    auto bestInstrument = pickBestInstrument(this->_orchestra[0].convertKeytoNote(key), this->_orchestra);
+    size_t bestInstrumentIdx = pickBestInstrument(this->_orchestra[0].convertKeytoNote(key));
+    cInstrument& bestInstrument = this->_orchestra[bestInstrumentIdx];
     if (!bestInstrument.isPlaying()) {
         bestInstrument.playNote(key);
         return true;
@@ -101,7 +106,8 @@ bool cConductor::handleKeypressUpEvent(char key) {
 }
 
 bool cConductor::handleMidiNoteOn(int midiNote, cNoteMap& noteMap) {
-    auto bestInstrument = pickBestInstrument(midiNote, this->_orchestra);
+    size_t bestInstrumentIdx = pickBestInstrument(midiNote);
+    cInstrument& bestInstrument = this->_orchestra[bestInstrumentIdx];
     if (!bestInstrument.isPlaying()) {
         int speed = noteMap.getSpeed(midiNote, "");
 

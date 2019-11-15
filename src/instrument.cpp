@@ -86,7 +86,7 @@ int cInstrument::getCurrentNote() {
 }
 
 int cInstrument::getPrevNote() {
-    return this->_currentNote;
+    return this->_prevNote;
 }
 
 int cInstrument::convertKeytoNote(char key) {
