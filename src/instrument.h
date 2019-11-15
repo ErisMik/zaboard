@@ -14,10 +14,12 @@ public:
     zaber::motion::ascii::Axis* getInstrument();
     int convertKeytoNote(char key);
     int getCurrentNote();
+    int getPrevNote();
 
 private:
     zaber::motion::ascii::Axis _instrument;
     int _currentNote;
+    int _prevNote;
     double _maxlimit;
     int _direction = 1;
 };

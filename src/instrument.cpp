@@ -69,6 +69,7 @@ void cInstrument::playMidiNote(int noteSpeed) {
 
 void cInstrument::silence() {
     this->_instrument.stop(false);
+    this->_prevNote = this->_currentNote;
     this->_currentNote = 0;
 }
 
@@ -81,6 +82,10 @@ Axis* cInstrument::getInstrument() {
 }
 
 int cInstrument::getCurrentNote() {
+    return this->_currentNote;
+}
+
+int cInstrument::getPrevNote() {
     return this->_currentNote;
 }
 

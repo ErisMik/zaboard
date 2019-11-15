@@ -1,11 +1,42 @@
 #include "conductor.h"
 #include "notemap.h"
-#include <iostream> // for operator<<, basic_ostream
-#include <string> // for operator<<
-#include <zaber/motion/ascii/axis.h> // for Axis
-#include <zaber/motion/ascii/axis_settings.h> // for ascii
+#include <cstdlib>
+#include <iostream>
+#include <string>
+#include <zaber/motion/ascii/axis.h>
+#include <zaber/motion/ascii/axis_settings.h>
 
 using namespace zaber::motion::ascii;
+
+double costToAssignNote(int newNote, cInstrument& instrument) {
+    double totalCost = 1.0 * abs(newNote - instrument.getPrevNote());
+
+    if (instrument.getPrevNote() == 0) {
+        totalCost = 0;
+    }
+
+    if (instrument.isPlaying()) {
+        totalCost = -1;
+    }
+
+    return totalCost;
+}
+
+cInstrument& pickBestInstrument(int newNote, std::vector<cInstrument>& instruments) {
+
+    double lowestCost = costToAssignNote(newNote, instruments[0]);
+    cInstrument& bestInstrument = instruments[0];
+
+    for (auto& instrumentRef : instruments) {
+        double cost = costToAssignNote(newNote, instruments[0]);
+        if (cost < lowestCost && cost >= 0) {
+            lowestCost = cost;
+            bestInstrument = instrumentRef;
+        }
+    }
+
+    return bestInstrument;
+}
 
 /* For some odd reason this constructor results in the interface ID become funky AF.
     No doubt this is something to do with copying the Connection class around. Will investigate. */
@@ -40,11 +71,10 @@ void cConductor::waitForInstrumentsReady() {
 }
 
 bool cConductor::handleKeypressDownEvent(char key) {
-    for (auto& instrumentRef : this->_orchestra) {
-        if (!instrumentRef.isPlaying()) {
-            instrumentRef.playNote(key);
-            return true;
-        }
+    auto bestInstrument = pickBestInstrument(this->_orchestra[0].convertKeytoNote(key), this->_orchestra);
+    if (!bestInstrument.isPlaying()) {
+        bestInstrument.playNote(key);
+        return true;
     }
 
     std::cout << "Unable to find free instrument for " << key << std::endl;
@@ -71,13 +101,12 @@ bool cConductor::handleKeypressUpEvent(char key) {
 }
 
 bool cConductor::handleMidiNoteOn(int midiNote, cNoteMap& noteMap) {
-    for (auto& instrumentRef : this->_orchestra) {
-        if (!instrumentRef.isPlaying()) {
-            int speed = noteMap.getSpeed(midiNote, "");
+    auto bestInstrument = pickBestInstrument(midiNote, this->_orchestra);
+    if (!bestInstrument.isPlaying()) {
+        int speed = noteMap.getSpeed(midiNote, "");
 
-            instrumentRef.playMidiNote(speed);
-            return true;
-        }
+        bestInstrument.playMidiNote(speed);
+        return true;
     }
 
     std::cout << "No instrumentfree for " << midiNote << std::endl;
